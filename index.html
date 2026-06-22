@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GROW A GARDEN 2 • Script Hub</title>
+    <style>
+        :root {
+            --bg: #0a0f0a;
+            --surface: #121a12;
+            --surface-light: #1a241a;
+            --primary: #4caf50;
+            --primary-glow: #66ff66;
+            --accent: #ffb74d;
+            --dragonfly: #8b5cf6;
+            --dragonfly-glow: #a78bfa;
+            --text: #e0e0e0;
+            --text-secondary: #a0b0a0;
+            --code-bg: #0d140d;
+            --code-border: #2a3a2a;
+            --radius: 20px;
+            --font: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+            --mono: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
+            --card-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1rem;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(76,175,80,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255,183,77,0.06) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(139,92,246,0.04) 0%, transparent 40%);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .fruit-bg {
+            position: fixed; pointer-events: none; font-size: 3rem;
+            opacity: 0.07; animation: floatFruit 25s infinite alternate ease-in-out;
+            z-index: 0; user-select: none;
+        }
+        .fruit-bg:nth-child(1) { top: 8%; left: 5%; animation-duration: 22s; }
+        .fruit-bg:nth-child(2) { top: 75%; left: 85%; animation-duration: 20s; animation-delay: -7s; }
+        .fruit-bg:nth-child(3) { top: 45%; left: 50%; animation-duration: 26s; animation-delay: -12s; }
+
+        .dragonfly-float {
+            position: fixed; pointer-events: none; font-size: 2.5rem;
+            opacity: 0.12; z-index: 0;
+            animation: dragonflyPath 15s infinite alternate ease-in-out; user-select: none;
+        }
+        .dragonfly-float:nth-child(4) { top: 30%; left: 15%; animation-duration: 18s; animation-delay: -3s; }
+        .dragonfly-float:nth-child(5) { top: 60%; left: 70%; animation-duration: 21s; animation-delay: -9s; }
+
+        @keyframes dragonflyPath {
+            0% { transform: translate(0,0) rotate(-10deg) scale(1); }
+            25% { transform: translate(50px,-30px) rotate(5deg) scale(1.1); }
+            50% { transform: translate(-20px,20px) rotate(-8deg) scale(0.9); }
+            75% { transform: translate(30px,15px) rotate(10deg) scale(1.05); }
+            100% { transform: translate(-40px,-15px) rotate(-5deg) scale(1); }
+        }
+
+        @keyframes floatFruit {
+            0% { transform: translate(0,0) rotate(0deg) scale(1); }
+            25% { transform: translate(30px,-25px) rotate(5deg) scale(1.05); }
+            50% { transform: translate(-20px,15px) rotate(-3deg) scale(0.95); }
+            75% { transform: translate(25px,20px) rotate(4deg) scale(1.03); }
+            100% { transform: translate(-30px,-10px) rotate(-5deg) scale(1); }
+        }
+
+        .container { position: relative; z-index: 1; width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 2rem; }
+
+        .lang-switcher { display: flex; justify-content: flex-end; gap: 0.6rem; margin-bottom: -0.5rem; }
+        .lang-btn {
+            background: var(--surface-light); border: 2px solid transparent;
+            color: var(--text-secondary); font-size: 1.6rem; padding: 0.4rem 0.7rem;
+            border-radius: 14px; cursor: pointer; transition: all 0.25s; line-height: 1; user-select: none;
+        }
+14:04
+.lang-btn:hover { background: var(--surface); border-color: var(--primary); color: var(--text); transform: scale(1.05); }
+        .lang-btn.active { background: var(--primary); border-color: var(--primary-glow); color: #fff; box-shadow: 0 0 15px rgba(76,175,80,0.5); transform: scale(1.08); }
+
+        .header { text-align: center; padding: 1rem 0 0.5rem; }
+        .header h1 {
+            font-size: clamp(2.2rem, 8vw, 3.2rem); font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-glow), var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; letter-spacing: -0.02em; margin-bottom: 0.2rem;
+        }
+        .header .subtitle { color: var(--text-secondary); font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap; }
+        .header .fruit-emoji { font-size: 2rem; animation: bounceFruit 2s infinite; }
+        @keyframes bounceFruit {
+            0%,100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .free-key-badge {
+            display: inline-block; background: linear-gradient(135deg, #4caf50, #2e7d32);
+            color: white; padding: 0.3rem 1rem; border-radius: 30px; font-weight: 700;
+            font-size: 0.9rem; animation: pulseBadge 2s infinite; margin-top: 0.5rem;
+        }
+        @keyframes pulseBadge {
+            0%,100% { box-shadow: 0 0 10px rgba(76,175,80,0.5); }
+            50% { box-shadow: 0 0 25px rgba(76,175,80,0.9); }
+        }
+        .hint-badge {
+            display: inline-block; background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+            color: white; padding: 0.3rem 1rem; border-radius: 30px; font-weight: 600;
+            font-size: 0.85rem; animation: pulseDragonfly 2.5s infinite; margin-top: 0.5rem; margin-left: 0.5rem;
+        }
+        @keyframes pulseDragonfly {
+            0%,100% { box-shadow: 0 0 10px rgba(139,92,246,0.5); }
+            50% { box-shadow: 0 0 25px rgba(139,92,246,0.9); }
+        }
+
+        .card {
+            background: var(--surface); border: 1px solid rgba(255,255,255,0.05);
+            border-radius: var(--radius); padding: 1.8rem; box-shadow: var(--card-shadow);
+            backdrop-filter: blur(10px); transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 20px rgba(76,175,80,0.3); }
+        .config-card {
+            border: 1px solid rgba(139,92,246,0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 30px rgba(139,92,246,0.1);
+        }
+        .config-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 40px rgba(139,92,246,0.25); }
+
+        .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 0.8rem; }
+        .card-title { font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; color: var(--primary-glow); }
+        .card-title .icon { font-size: 1.8rem; }
+        .card-title.dragonfly-title { color: var(--dragonfly-glow); }
+
+        .code-block {
+            position: relative; background: var(--code-bg); border: 1px solid var(--code-border);
+            border-radius: 12px; overflow: hidden; font-family: var(--mono); font-size: 0.9rem; line-height: 1.5;
+        }
+        .config-card .code-block { border-color: rgba(139,92,246,0.3); }
+        .code-block pre {
+            padding: 1.2rem; margin: 0; overflow-x: auto; white-space: pre-wrap;
+            word-break: break-word; color: #d4d4d4; max-height: 350px; overflow-y: auto;
+        }
+        .code-block pre::-webkit-scrollbar { width: 6px; height: 6px; }
+        .code-block pre::-webkit-scrollbar-track { background: transparent; }
+        .code-block pre::-webkit-scrollbar-thumb { background: #2a3a2a; border-radius: 8px; }
+
+        .copy-btn {
+14:04
+display: flex; align-items: center; gap: 0.4rem; background: var(--surface-light);
+            border: 1px solid var(--code-border); color: var(--text); padding: 0.5rem 1.2rem;
+            border-radius: 30px; cursor: pointer; font-size: 0.85rem; font-weight: 600;
+            transition: all 0.25s; white-space: nowrap; font-family: var(--font);
+        }
+        .copy-btn:hover { background: var(--primary); border-color: var(--primary); color: #fff; box-shadow: 0 0 15px rgba(76,175,80,0.5); }
+        .copy-btn.dragonfly-copy:hover { background: var(--dragonfly); border-color: var(--dragonfly-glow); box-shadow: 0 0 15px rgba(139,92,246,0.6); }
+        .copy-btn.copied { background: #2e7d32; border-color: #66bb6a; color: white; }
+        .copy-btn.dragonfly-copied { background: #6d28d9; border-color: #8b5cf6; color: white; }
+        .button-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+        .config-image-container { display: flex; justify-content: center; margin-bottom: 1rem; }
+        .config-image-container img {
+            max-width: 100%; height: auto; border-radius: 12px;
+            border: 2px solid rgba(139,92,246,0.4);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 25px rgba(139,92,246,0.15);
+            max-height: 250px; object-fit: contain; transition: transform 0.3s, box-shadow 0.3s;
+            background: rgba(0,0,0,0.3);
+        }
+        .config-image-container img:hover { transform: scale(1.03); box-shadow: 0 8px 35px rgba(139,92,246,0.4); }
+        .image-caption { text-align: center; color: var(--dragonfly-glow); font-size: 0.85rem; margin-top: 0.4rem; font-weight: 600; }
+
+        .hint-box {
+            background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3);
+            border-radius: 12px; padding: 0.8rem 1rem; margin-top: 1rem;
+            display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem;
+            color: var(--dragonfly-glow); animation: hintGlow 3s infinite alternate;
+        }
+        @keyframes hintGlow {
+            0% { border-color: rgba(139,92,246,0.3); box-shadow: 0 0 5px rgba(139,92,246,0.1); }
+            100% { border-color: rgba(139,92,246,0.6); box-shadow: 0 0 15px rgba(139,92,246,0.25); }
+        }
+        .hint-box .hint-icon { font-size: 1.5rem; flex-shrink: 0; }
+
+        .footer {
+            text-align: center; color: var(--text-secondary); font-size: 0.9rem;
+            padding: 0.5rem 0 1rem; opacity: 0.9;
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap;
+        }
+        .footer span { color: var(--accent); }
+        .footer .year { font-weight: 700; color: var(--primary-glow); font-size: 1rem; }
+        .footer .free-key-text {
+            background: rgba(76,175,80,0.15); color: var(--primary-glow);
+            padding: 0.2rem 0.8rem; border-radius: 20px; font-weight: 600; font-size: 0.85rem;
+        }
+        .footer .dragonfly-footer {
+            background: rgba(139,92,246,0.15); color: var(--dragonfly-glow);
+            padding: 0.2rem 0.8rem; border-radius: 20px; font-weight: 600; font-size: 0.85rem;
+        }
+
+        span.lang-ru, span.lang-en { display: none; }
+        body.lang-ru span.lang-ru { display: inline; }
+        body.lang-en span.lang-en { display: inline; }
+        body.lang-ru .hint-box.lang-ru { display: flex; }
+        body.lang-ru .hint-box.lang-en { display: none; }
+        body.lang-en .hint-box.lang-en { display: flex; }
+        body.lang-en .hint-box.lang-ru { display: none; }
+
+        @media (max-width: 600px) {
+            .card { padding: 1.2rem; }
+            .code-block pre { font-size: 0.75rem; padding: 0.8rem; }
+            .lang-switcher { justify-content: center; }
+        }
+    </style>
+</head>
+<body class="lang-ru">
+    <div class="fruit-bg">🍎 </div>
+    <div class="fruit-bg">🍋 </div>
+    <div class="fruit-bg">🍇 </div>
+    <div class="dragonfly-float">🦋 </div>
+    <div class="dragonfly-float">✨</div>
+
+    <div class="container">
+14:04
+<!-- Language Switcher -->
+        <div class="lang-switcher">
+            <button class="lang-btn active" id="btnRu" onclick="setLang('ru')" title="Русский">🇷🇺 </button>
+            <button class="lang-btn" id="btnEn" onclick="setLang('en')" title="English">🇬🇧 </button>
+        </div>
+
+        <div class="header">
+            <h1>GROW A GARDEN 2</h1>
+            <div class="subtitle">
+                <span>Script Hub</span>
+                <span class="fruit-emoji">🍒 </span>
+                <span>by SWILL</span>
+            </div>
+            <div>
+                <span class="free-key-badge">🔑  FREE KEY</span>
+                <span class="hint-badge lang-ru">🦋  РЕДКИЕ ПИТОМЦЫ</span>
+                <span class="hint-badge lang-en">🦋  RARE PETS</span>
+            </div>
+        </div>
+
+        <!-- Script Card -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="icon">📜 </span>
+                    <span class="lang-ru">Основной скрипт</span>
+                    <span class="lang-en">Main Script</span>
+                </div>
+                <button class="copy-btn" id="copyScriptBtn" onclick="copyCode('scriptCode', 'copyScriptBtn')">
+                    <span class="lang-ru">📋 Копировать</span>
+                    <span class="lang-en">📋 Copy</span>
+                </button>
+            </div>
+            <div class="code-block">
+                <pre id="scriptCode">script_key = "Free_key"
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Fluxyyy333/HoshiOnTop/main/loader.lua"))()</pre>
+            </div>
+        </div>
+
+        <!-- Config Card -->
+        <div class="card config-card">
+            <div class="card-header">
+                <div class="card-title dragonfly-title">
+                    <span class="icon">⚙️ </span>
+                    <span class="lang-ru">Конфиг</span>
+                    <span class="lang-en">Config</span>
+                </div>
+                <div class="button-row">
+                    <button class="copy-btn dragonfly-copy" id="copyConfigBtn" onclick="copyCode('configCode', 'copyConfigBtn', true)">
+                        <span class="lang-ru">📋 Копировать конфиг</span>
+                        <span class="lang-en">📋 Copy Config</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="config-image-container">
+                <!-- Вот твоя прошлая фотка с Etsy (прямая ссылка) -->
+                <img src="https://i.etsystatic.com/57116948/r/il/570ea4/6970851788/il_800x800.6970851788_6k4e.jpg" 
+                     alt="Grow a Garden 2 Dragonfly Art" 
+                     loading="lazy"
+                     onerror="this.style.display='none'; document.getElementById('imgFallback').style.display='flex';">
+                <div id="imgFallback" style="display:none; justify-content:center; align-items:center; color:var(--dragonfly-glow); padding:2rem; font-size:3rem; width:100%;">
+                    🦋 ✨
+                </div>
+            </div>
+            <div class="image-caption">🦋  GoldenDragonfly • Grow a Garden 2</div>
+
+            <div class="hint-box lang-ru">
+                <span class="hint-icon">💎 </span>
+                <span><strong>Секрет конфига:</strong> этот пресет быстро фармит редких питомцев — <em>GoldenDragonfly, Unicorn, BlackDragon, IceSerpent</em> и других легендарных петов! 🦋 </span>
+            </div>
+            <div class="hint-box lang-en">
+                <span class="hint-icon">💎 </span>
+                <span><strong>Config secret:</strong> this preset quickly farms rare pets — <em>GoldenDragonfly, Unicorn, BlackDragon, IceSerpent</em> and other legendary pets! 🦋 </span>
+            </div>
+
+            <div class="code-block" style="margin-top: 1rem;">
+14:04
+<pre id="configCode">{"V":{"OPEN_INT":2,"BUY_DELAY":0.15,"HARVEST_INT":0.6,"SELL_INT":30,"PLANT_INT":0.35,"WATER_INT":3,"BUY_INT":1,"SNIPE_MAXPRICE":0,"SNIPE_INT":1,"HARVEST_DELAY":0.05,"SPRINKLER_INT":10},"C":{"giftSel":{"HarvestedFruits":[],"Seeds":["Carrot"],"WateringCans":["Super Watering Can","Common Watering Can"],"Mushrooms":[],"Sprinklers":["Rare Sprinkler","Common Sprinkler","Super Sprinkler","Legendary Sprinkler"],"Crates":[],"Gnomes":[]},"favSizeMin":0,"harvestMut":[],"stealPickGarden":"","favMut":[],"sellMut":[],"gearPlants":[],"buySeeds":["Carrot","Bamboo","Mushroom"],"sellSize":0,"openEggs":[],"harvestSizeMax":0,"sellAction":"Sell","shovelFruitMut":[],"shovelPlants":[],"mailSel":{"Seeds":["Hypnobloom","Dragon's Breath","Poison Ivy","Romanesco","Gold","Sunflower","Venus Fly Trap","Venom Spitter","Bamboo","Carrot","Pomegranate","Ghost Pepper","Mango","Mushroom","Rainbow","Poison Apple","Pineapple"],"Crates":[],"SeedPacks":["Mythic Seed Pack","Secret Seed Pack","Ghost Pepper Pack","Legendary Seed Pack","Super Seed Pack"],"Trowels":[],"WateringCans":["Super Watering Can","Common Watering Can"],"Sprinklers":["Rare Sprinkler","Common Sprinkler","Super Sprinkler","Legendary Sprinkler"],"Gnomes":[],"Mushrooms":[],"Props":[]},"snipeMinRarity":"","trowelPos":"","snipeMuts":[],"shovelFruitKg":0,"snipePets":[],"favSizeMax":0,"plantPos":"","walkSpeedVal":32,"scannerAutoJoin":false,"scannerSizes":[],"hopDelay":10,"sellFruits":[],"hopReqMinSize":0,"harvestSeeds":[],"scannerMinRarity":"Legendary","hopReqMinKg":0,"hopReqPets":[],"scannerPets":[],"hopReqMutations":[],"plantSeeds":[],"sprinklerTypes":[],"mailPets":["Raccoon","Unicorn","BlackDragon","IceSerpent","Monkey","GoldenDragonfly","Bee","Bear"],"hopReqMinPlayers":0,"buyGear":["Uncommon Sprinkler","Rare Sprinkler","Legendary Sprinkler","Common Sprinkler","Super Watering Can","Super Sprinkler"],"mailAmount":20,"stealMinValue":0,"mailNote":"ezz","buyCrate":[],"mailUser":"EZXYESOS","stealMut":[],"scannerDelay":15,"snipeSizes":[],"WH":{"status":{"enabled":false,"url":"","intervalMin":5},"event":{"rainbow":true,"url":"","gold":true},"buy":{"enabled":false,"url":"","pets":[],"seeds":[]}},"openCrates":[],"openPacks":[],"sellSizeMode":"Below","shovelFruitCrops":[],"trowelPlants":[],"giftTarget":"","stealMinWeight":0,"favCrops":[],"harvestSize":0,"collectSeedTypes":["Gold Seed","Rainbow Seed"],"stealCrops":[],"waterCan":"Common Watering Can"},"F":{"autoSell":false,"espFruit":false,"autoFavorite":false,"autoBestFruit":false,"stealFlingOwner":false,"autoBuy":true,"autoOpenCrate":false,"defendPets":false,"autoTrowel":false,"doubleOrNothing":false,"autoWater":false,"autoGift":false,"autoShovelFruit":false,"autoShovelNearby":false,"backpackFruitValue":false,"autoHop":false,"godmode":false,"petSnipe":false,"autoHitThief":false,"nativeStock":false,"flingPlayer":false,"antiFling":false,"scannerAutoJoin":false,"autoShovel":false,"walkSpeed":false,"rejoinOnKick":false,"autoHarvest":false,"autoCollectSeed":false,"autoSteal":false,"harvestHighest":false,"espPlayer":false,"fpsBoost":false,"autoOpenEgg":false,"autoPlant":false,"autoMail":true,"snipeOwned":false,"autoClaimMail":false,"noclip":false,"autoExecute":false,"autoSprinkler":false,"autoOpenSeedPack":false,"weatherPredictor":false}}</pre>
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>🍎 </span> Grow a Garden 2 • SWILL Script Hub • <span class="year">2026</span>
+            <span class="free-key-text">🔑  FREE KEY</span>
+            <span class="dragonfly-footer">🦋  GoldenDragonfly Farm</span>
+        </div>
+    </div>
+
+    <script>
+        function setLang(lang) {
+            document.body.classList.remove('lang-ru', 'lang-en');
+            document.body.classList.add('lang-' + lang);
+            document.getElementById('btnRu').classList.toggle('active', lang === 'ru');
+            document.getElementById('btnEn').classList.toggle('active', lang === 'en');
+        }
+14:04
+function copyCode(elementId, buttonId, isDragonfly = false) {
+            const el = document.getElementById(elementId);
+            const btn = document.getElementById(buttonId);
+            if (!el || !btn) return;
+            const text = el.innerText || el.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                btn.classList.add(isDragonfly ? 'dragonfly-copied' : 'copied');
+                const orig = btn.innerHTML;
+                const isRu = document.body.classList.contains('lang-ru');
+                btn.innerHTML = isRu ? '✅ Скопировано!' : '✅ Copied!';
+                setTimeout(() => { btn.classList.remove(isDragonfly ? 'dragonfly-copied' : 'copied'); btn.innerHTML = orig; }, 2000);
+            }).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+                document.body.appendChild(ta); ta.select();
+                try { document.execCommand('copy'); } catch(e) {}
+                document.body.removeChild(ta);
+                btn.classList.add(isDragonfly ? 'dragonfly-copied' : 'copied');
+                const orig = btn.innerHTML;
+                const isRu = document.body.classList.contains('lang-ru');
+                btn.innerHTML = isRu ? '✅ Скопировано!' : '✅ Copied!';
+                setTimeout(() => { btn.classList.remove(isDragonfly ? 'dragonfly-copied' : 'copied'); btn.innerHTML = orig; }, 2000);
+            });
+        }
+
+        window.addEventListener('load', () => {
+            const pre = document.getElementById('configCode');
+            if (pre) { try { pre.innerText = JSON.stringify(JSON.parse(pre.innerText), null, 2); } catch(e) {} }
+        });
+    </script>
+</body>
+</html>
